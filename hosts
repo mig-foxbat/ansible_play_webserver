@@ -1,0 +1,3 @@
+[webservers]
+play_app1 ansible_ssh_user=ubuntu ansible_ssh_host=ec2-54-69-161-175.us-west-2.compute.amazonaws.com
+

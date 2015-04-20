@@ -1,0 +1,34 @@
+---
+
+- name: detect activator
+  command: which activator
+  register: installed
+
+- name: Install unzip Module
+  apt: name=unzip state=latest
+  when: strict == "yes" or (not installed)
+
+- name: Create activator lib dir
+  file: path={{activator_lib_path}} state=directory
+  when: strict == "yes" or (not installed)
+
+- name: Clean existing Activator {{activator_version_name}} if it exists
+  file: path={{activator_lib_path_target}} state=absent
+  when: strict == "yes" or (not installed)
+
+- name: Download activator v{{activator_version}}
+  get_url: url={{activator_download_url}} 
+    dest={{staging_dir}}/{{activator_archive_file}}
+    force=no
+  when: strict == "yes" or (not installed)
+
+- name: Install Activator
+  command: "{{item}} chdir=/tmp/"
+  when: strict == "yes" or (not installed)  
+  with_items:
+    - rm -rf {{staging_dir}}/{{activator_directory}}
+    - unzip {{activator_archive_file}}
+    - mv /tmp/{{activator_directory}} {{activator_lib_path_target}}
+    - ln -sf {{activator_lib_path_target}}/activator {{activator_link_target}}
+ 
+

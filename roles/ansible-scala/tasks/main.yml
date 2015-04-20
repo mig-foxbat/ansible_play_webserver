@@ -1,0 +1,59 @@
+--- 
+
+
+- name: install java
+  apt: name=openjdk-7-jre state=latest
+
+- name: detect scala
+  command: which scala
+  register: installed
+
+- name: Create scala lib dir
+  file: path={{scala_lib_path}} state=directory
+  when: strict == "yes" or (not installed)
+
+- name: Clean existing Scala {{scala_version_name}} if it exists
+  file: path={{scala_lib_path_target}} state=absent
+  when: strict == "yes" or (not installed)
+
+- name: Download scala v{{scala_version}}
+  get_url: url={{scala_download_url}} 
+    dest={{staging_dir}}/{{scala_archive_file}}
+    force=no
+  when: strict == "yes" or (not installed)
+
+- name: Unpack Scala
+  command: tar -xvf {{scala_archive_file}} chdir={{staging_dir}}/
+  when: strict == "yes" or (not installed)
+
+- name: Move (by force) Scala to lib
+  command: mv {{staging_dir}}/{{scala_version_name}} {{scala_lib_path_target}} chdir={{staging_dir}}/
+  when: strict == "yes" or (not installed)  
+
+- name: Link scala
+  command: ln -sf {{scala_lib_path_target}}/bin/scala {{scala_link_target}}
+  when: strict == "yes" or (not installed)  
+
+- name: Link scalac
+  command: ln -sf {{scala_lib_path_target}}/bin/scalac {{scala_link_target}}
+  when: strict == "yes" or (not installed)
+
+- name: Link fsc
+  command: ln -sf {{scala_lib_path_target}}/bin/fsc {{scala_link_target}}
+  when: strict == "yes" or (not installed)
+
+- name: Link sbaz
+  command: ln -sf {{scala_lib_path_target}}/bin/sbaz {{scala_link_target}}
+  when: strict == "yes" or (not installed)
+
+- name: Link sbaz-setup
+  command: ln -sf {{scala_lib_path_target}}/bin/sbaz-setup {{scala_link_target}}
+  when: strict == "yes" or (not installed)
+
+- name: Link scaladoc
+  command: ln -sf {{scala_lib_path_target}}/bin/scaladoc {{scala_link_target}}
+  when: strict == "yes" or (not installed)
+
+- name: Link scalap
+  command: ln -sf {{scala_lib_path_target}}/bin/scalap {{scala_link_target}}
+  when: strict == "yes" or (not installed)
