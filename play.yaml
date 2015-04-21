@@ -6,13 +6,12 @@
   tasks:
     - name: update apt
       apt: update_cache=yes
-
-
+      when: strict == "yes"
 
 - name: install apps
   hosts: webservers
   sudo: yes
   roles:
-     - ansible-scala
+  #   - ansible-scala
      - ansible-activator
 

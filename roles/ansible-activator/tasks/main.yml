@@ -3,6 +3,7 @@
 - name: detect activator
   command: which activator
   register: installed
+  ignore_errors: yes
 
 - name: Install unzip Module
   apt: name=unzip state=latest
@@ -23,12 +24,16 @@
   when: strict == "yes" or (not installed)
 
 - name: Install Activator
-  command: "{{item}} chdir=/tmp/"
+  command: "{{item}} chdir=/tmp/" 
   when: strict == "yes" or (not installed)  
   with_items:
     - rm -rf {{staging_dir}}/{{activator_directory}}
-    - unzip {{activator_archive_file}}
-    - mv /tmp/{{activator_directory}} {{activator_lib_path_target}}
+    - unzip {{activator_archive_file}} 
+    - mv /tmp/{{activator_directory}} {{activator_lib_path_target}} 
     - ln -sf {{activator_lib_path_target}}/activator {{activator_link_target}}
  
+- name: mark activator as executable
+  file: path={{activator_lib_path_target}}  state=directory mode=755 recurse=yes
+  when: strict == "yes"  or (not installed)
+
 
